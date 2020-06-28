@@ -141,13 +141,13 @@ def joint_probability(people, one_gene, two_genes, have_trait):
     # Getting Ancestors (i.e : people who have no parents)
     parents = []
     for person in people:
-        if people[person] ["mother"] == None:
+        if people[person]["mother"] == None:
             parents.append(people[person]['name'])
             
     values_computed = dict()
     
     for person in people.keys():
-        values_computed.update({people[person]['name'] : []})    
+        values_computed.update({people[person]['name']: []})    
 
     # First I compute the value for parents
     for parent in parents:
@@ -197,7 +197,6 @@ def joint_probability(people, one_gene, two_genes, have_trait):
             chance_to_not_get_from_mother = PROBS['mutation']
             chance_to_get_from_mother = 1 - PROBS['mutation']
 
-
         # If the father has zero genes, one gene or two genes
         if people[child]['father'] not in one_gene and people[child]['father'] not in two_genes:
             chance_to_not_get_from_father = 1 - PROBS['mutation']
@@ -210,7 +209,6 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         else:
             chance_to_not_get_from_father = PROBS['mutation']
             chance_to_get_from_father = 1 - PROBS['mutation']
-
         
         # Computing the probability for the child given the state of the parent
 
@@ -224,8 +222,8 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 values_computed[child].append(PROBS["trait"][0][False])
 
         elif child in one_gene:
-            values_computed[child].append(chance_to_not_get_from_mother * chance_to_get_from_father
-                                             + chance_to_get_from_mother * chance_to_not_get_from_father)
+            values_computed[child].append(chance_to_not_get_from_mother * chance_to_get_from_father +
+                                          chance_to_get_from_mother * chance_to_not_get_from_father)
 
             # I compute that a child does or doesnot have the trait given it has one gene
             if child in have_trait:
@@ -234,7 +232,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 values_computed[child].append(PROBS["trait"][1][False])
         else:
 
-            values_computed[child].append(chance_to_get_from_mother  * chance_to_get_from_father)
+            values_computed[child].append(chance_to_get_from_mother * chance_to_get_from_father)
 
             # I compute that a child does or doesnot have the trait given it has two genes
             if child in have_trait:
@@ -242,9 +240,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
             else:
                 values_computed[child].append(PROBS["trait"][2][False])
             
-
     # print(values_computed)
-
     # Multiplying all values by each other
     ret = 1
 
@@ -262,6 +258,7 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
+    # Adding p to the respective probabilities
     for person in probabilities:
 
         if person in one_gene:
@@ -278,11 +275,13 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     
     return 
 
+
 def normalize(probabilities):
     """
     Update `probabilities` such that each probability distribution
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
+    # Computing the Corerction factor which is equal to the 1 / total values and then multiplying each value by this factor
     for person in probabilities:
         
         total_gene_values = probabilities[person]["gene"][0] + probabilities[person]["gene"][1] + probabilities[person]["gene"][2]
@@ -297,6 +296,7 @@ def normalize(probabilities):
         probabilities[person]["trait"][True] *= correctionFactor
 
     return
+
 
 if __name__ == "__main__":
     main()
